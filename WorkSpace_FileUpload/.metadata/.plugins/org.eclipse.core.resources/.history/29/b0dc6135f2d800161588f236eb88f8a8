@@ -1,0 +1,20 @@
+<component>
+        <files>
+            <file>
+                <source>rest-application/target/server.jar</source>
+                <destName>server.jar</destName>
+            </file> 
+            <file>
+                <source>rest-api/target/api.war</source>
+                <destName>api.war</destName>
+            </file>
+            <file>
+                <source>admin/target/admin.war</source>
+                <destName>admin.war</destName>
+            </file>
+			<file>
+                <source>web/target/web.war</source>
+                <destName>web.war</destName>
+            </file>
+        </files>
+</component>

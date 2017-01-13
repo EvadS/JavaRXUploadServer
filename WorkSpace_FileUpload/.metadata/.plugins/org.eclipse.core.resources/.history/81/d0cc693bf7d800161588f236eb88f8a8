@@ -1,0 +1,42 @@
+package com.mobius.software.mqtt.api.data;
+
+import java.io.ByteArrayInputStream;
+import java.util.UUID;
+
+import org.apache.commons.io.FilenameUtils;
+
+import com.mobus.software.common.dal.files.StorageHandlerInterface;
+
+public class StorageUtil
+{
+	private static final String PROTOCOL_PREFIX = "http://";
+	private static final String SEPARATOR = "/";
+	private static final String IMAGE = "image";
+
+	public static String uploadImage(StorageHandlerInterface handler, UUID entityID, byte[] content, String folder, String filename)
+	{
+		String extension = FilenameUtils.getExtension(filename);
+		if (extension == null || extension.isEmpty())
+			throw new IllegalArgumentException("an error occured while parsing file's extension for filename: " + filename);
+
+		String contentType = IMAGE + SEPARATOR + extension;
+		ByteArrayInputStream bis = new ByteArrayInputStream(content);
+		return handler.uploadFile(folder, entityID.toString(), contentType, bis);
+	}
+
+	public static byte[] downloadImage(StorageHandlerInterface handler, String folder, String filename)
+	{
+		byte[] content = handler.downloadFile(folder, filename);
+		return content;
+	}
+
+	public static void removeFile(StorageHandlerInterface handler, String folder, UUID entityID)
+	{
+		handler.removeFile(folder, entityID.toString());
+	}
+
+	public static String assembleFileURL(String bucketName, String folder, UUID entityID)
+	{
+		return PROTOCOL_PREFIX + bucketName + SEPARATOR + folder + SEPARATOR + entityID.toString();
+	}
+}

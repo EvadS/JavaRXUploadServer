@@ -1,0 +1,133 @@
+package local.filestorage.rest.api;
+
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consum
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
+
+import com.google.cloud.storage.StorageException;
+import com.mobius.software.common.dal.db.AsyncDriver;
+import com.mobius.software.common.dal.db.DalException;
+import com.mobius.software.common.dal.db.UUIDGenerator;
+import com.mobius.software.mqtt.api.data.FileType;
+import com.mobius.software.mqtt.api.data.StorageUtil;
+import com.mobius.software.mqtt.api.json.FileUploadForm;
+import com.mobius.software.mqtt.api.json.GenericJsonResponse;
+import com.mobius.software.mqtt.api.json.ListResponse;
+import com.mobius.software.mqtt.dal.Account;
+import com.mobius.software.mqtt.dal.ImageFile;
+import com.mobius.software.mqtt.dal.management.async.AsyncTaskProcessor;
+
+import local.filestorage.server.StorageBean;
+
+@Path("/files")
+public class FilesService
+{
+	private StorageBean settingsBean;
+
+	public FilesService() throws NamingException
+	{
+		settingsBean = (StorageBean) (new InitialContext()).lookup(BEAN_LOOKUP);
+	}
+
+	@POST
+	@Path("/upload")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+	public GenericJsonResponse upload(@Context HttpServletRequest request, @MultipartForm FileUploadForm form)
+	{
+		if (!form.isValid())
+			return new GenericJsonResponse(ERROR, INVALID_PARAMETERS);
+
+		AsyncDriver driver = settingsBean.getCassandraDriver();
+		try
+		{
+			if (!AsyncTaskProcessor.validateAdmin(driver, form.getUsername(), form.getSessionID(), FileStoregeApplication.getRequestIPAddress(request)))
+				return new GenericJsonResponse(ERROR, AUTHENTICATION_FAILURE);
+
+			UUID imageID = UUIDGenerator.bytesToUUID(ByteBuffer.wrap(settingsBean.getGenerator().GenerateTimeBasedGuidBytes(System.currentTimeMillis())));
+			StorageUtil.uploadImage(settingsBean.getStorageHandler(), imageID, form.getFileData(), FileType.IMAGE_FILES.getFolderName(), form.getFileName());
+			ImageFile file = new ImageFile(imageID, form.getFileName());
+			AsyncTaskProcessor.setImageFile(driver, file);
+
+			return new GenericJsonResponse(SUCCESS, "/files/getimage/" + imageID);
+		}
+		catch (DalException e)
+		{
+			return new GenericJsonResponse(ERROR, INTERNAL_SERVER_ERROR + e.getExceptionType().toString() + ":" + e.getMessage());
+		}
+		catch (StorageException e)
+		{
+			return new GenericJsonResponse(ERROR, FILE_STORE_ERROR + e.getMessage());
+		}
+		finally
+		{
+			settingsBean.releaseCassandraDriver(driver);
+		}
+	}
+
+	@GET
+	@Path("/list/{username}/{sessionID}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public GenericJsonResponse listFiles(@Context HttpServletRequest request, @Context ServletContext context, @PathParam("username") String username, @PathParam("sessionID") String sessionID)
+	{
+		AsyncDriver driver = settingsBean.getCassandraDriver();
+		try
+		{
+			Account currAccount = AsyncTaskProcessor.validateCustomer(driver, username, sessionID);
+			if (currAccount == null)
+				return new GenericJsonResponse(ERROR, AUTHENTICATION_FAILURE);
+
+			if (!currAccount.authorized())
+				return new GenericJsonResponse(ERROR, UNAUTHORIZED);
+
+			int pageSize = settingsBean.getCustomerRequestPageSize();
+			List<ImageFile> allFiles = new ArrayList<>();
+			List<ImageFile> page = null;
+			UUID firstKey = null;
+			do
+			{
+				page = AsyncTaskProcessor.getImageFiles(driver, firstKey, null, false, false, pageSize);
+				if (!page.isEmpty())
+				{
+					allFiles.addAll(page);
+					firstKey = page.get(page.size() - 1).getImageID();
+				}
+			}
+			while (page.size() == pageSize);
+
+			List<String> list = new ArrayList<>();
+			for (ImageFile file : allFiles)
+			{
+				String imageURL = StorageUtil.assembleFileURL(settingsBean.getGoogleBucketName(), FileType.IMAGE_FILES.getFolderName(), file.getImageID());
+				list.add(imageURL);
+			}
+
+			return new ListResponse<String>(list);
+		}
+		catch (DalException e)
+		{
+			return new GenericJsonResponse(ERROR, INTERNAL_SERVER_ERROR + e.getExceptionType().toString() + ":" + e.getMessage());
+		}
+		finally
+		{
+			settingsBean.releaseCassandraDriver(driver);
+		}
+	}
+}

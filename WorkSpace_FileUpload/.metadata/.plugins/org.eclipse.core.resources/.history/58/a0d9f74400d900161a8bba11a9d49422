@@ -1,0 +1,17 @@
+package local.filestorage.rest.json;
+
+public interface ResponseData
+{
+	String BEAN_LOOKUP = "java:global/fileStorage/server/SettingsBean";
+
+	String ERROR = "ERROR";
+	String SUCCESS = "SUCCESS";
+
+	String INVALID_PARAMETERS = "One of the required fields is missing or invalid";
+	String AUTHENTICATION_FAILURE = "Authentication failure";
+	String NOT_FOUND = "Requested resource not found";
+	String INTERNAL_SERVER_ERROR = "Internal server error, ";
+	String UNAUTHORIZED = "Unauthorized";
+	String FILE_STORE_ERROR = "an error occured while storing file ";
+	String FILE_REMOVE_ERROR = "an error occured while deleting file ";
+}

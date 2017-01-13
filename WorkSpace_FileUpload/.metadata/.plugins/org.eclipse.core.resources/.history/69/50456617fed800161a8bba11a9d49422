@@ -1,0 +1,5 @@
+package local.filestorage.rest.util;
+
+public class StorageUtil {
+
+}

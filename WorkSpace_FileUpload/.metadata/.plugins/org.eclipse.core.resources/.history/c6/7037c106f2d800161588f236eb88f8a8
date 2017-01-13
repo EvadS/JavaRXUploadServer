@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd">
+
+	<application-name>mqtt-server-app</application-name>
+	<module>
+		<ejb>server.jar</ejb>
+	</module>
+	<module>
+		<web>
+			<web-uri>api.war</web-uri>
+			<context-root>/api</context-root>
+		</web>
+	</module>
+	<module>
+		<web>
+			<web-uri>admin.war</web-uri>
+			<context-root>/admin</context-root>
+		</web>
+	</module>
+	<module>
+		<web>
+			<web-uri>web.war</web-uri>
+			<context-root>/</context-root>
+		</web>
+	</module>
+	<library-directory>lib</library-directory>
+</application>

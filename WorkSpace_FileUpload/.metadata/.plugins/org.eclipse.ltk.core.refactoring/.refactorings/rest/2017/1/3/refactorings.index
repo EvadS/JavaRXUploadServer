@@ -1,0 +1,12 @@
+1484245245724	Rename type 'IotCloudRestApplication'
+1484246629411	Rename package 'local.filestorage.rest.objects'
+1484246665848	Rename package 'local.filestorage.rest.request'
+1484246667838	Delete element
+1484246704932	Rename package 'local.filestorage.rest.data'
+1484247558938	Rename type 'Validation'
+1484247563544	Rename type 'ValidateUser'
+1484247578208	Delete element
+1484248684148	Rename local variable 'content'
+1484249510267	Delete element
+1484250790727	Rename field 'settingsBean'
+1484252481447	Delete element

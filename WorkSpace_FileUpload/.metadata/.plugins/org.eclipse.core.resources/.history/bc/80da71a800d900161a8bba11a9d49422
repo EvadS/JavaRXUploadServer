@@ -1,0 +1,8 @@
+package local.filestorage.server;
+
+public class Snippet {
+	public static void main(String[] args) {
+		local.filestorage.server
+	}
+}
+

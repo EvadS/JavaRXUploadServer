@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
+	version="3.1">
+	<enterprise-beans>
+		<session>
+			<ejb-name>SettingsBean</ejb-name>
+			<ejb-class>com.mobius.software.mqtt.server.SettingsBean</ejb-class>
+			<session-type>Singleton</session-type>
+			<init-on-startup>true</init-on-startup>
+			<env-entry>
+				<env-entry-name>com.mobius.software.mqtt.server.SettingsBean/storageFolder</env-entry-name>
+				<env-entry-type>java.lang.String</env-entry-type>
+				<env-entry-value>/opt/wildfly/website/content/</env-entry-value>
+			</env-entry>
+		</session>
+	</enterprise-beans>
+</ejb-jar>

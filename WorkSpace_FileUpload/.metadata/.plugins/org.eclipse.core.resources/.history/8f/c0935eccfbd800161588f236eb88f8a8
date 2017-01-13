@@ -1,0 +1,20 @@
+package local.filestorage.rest.tests;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+public class StorageUtilTests {
+	private static final String FOLDER = "C:\\storage";
+	private static final String FILENAME = "example.txt";
+
+	@Test
+	public void testStoreFile() {
+		try {
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail();
+		}
+	}
+}

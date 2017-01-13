@@ -1,0 +1,6 @@
+package local.filestorage.rest.tests;
+
+public class StorageUtilTests {
+	private static final String FOLDER = "C:\\storage";
+	private static final String FILENAME = "example.txt";
+}

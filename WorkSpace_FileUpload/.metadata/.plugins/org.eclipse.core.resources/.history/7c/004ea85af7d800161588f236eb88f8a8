@@ -1,0 +1,48 @@
+package local.filestorage.rest.json;
+
+import javax.ws.rs.FormParam;
+
+import org.jboss.resteasy.annotations.providers.multipart.PartType;
+
+public class FileUploadForm {
+	private String username;
+
+	private String fileName;
+	private byte[] fileData;
+
+	public FileUploadForm() {
+
+	}
+
+	public byte[] getFileData() {
+		return fileData;
+	}
+
+	@FormParam("fileData")
+	@PartType("application/octet-stream")
+	public void setFileData(byte[] fileData) {
+		this.fileData = fileData;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	@FormParam("fileName")
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	@FormParam("username")
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public boolean isValid() {
+		return username != null && fileName != null && fileData != null;
+	}
+}

@@ -1,0 +1,28 @@
+package local.filestorage.rest.util;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+
+public class StorageUtil {
+
+	public static void store(String filename, String folderPath, byte[] content) throws IOException {
+		File file = new File(assembleFilePath(folderPath, filename));
+		if (!file.exists())
+			file.createNewFile();
+		FileUtils.writeByteArrayToFile(file, content);
+	}
+
+	public static File retrieve(String filename, String folderPath) throws IOException {
+		File file = new File(assembleFilePath(folderPath, filename));
+		byte[] content = null;
+		if (file.exists()) {
+			content = FileUtils.readFileToByteArray(file);
+		}
+	}
+
+	private static String assembleFilePath(String filename, String folderPath) {
+		return folderPath + File.separator + filename;
+	}
+}

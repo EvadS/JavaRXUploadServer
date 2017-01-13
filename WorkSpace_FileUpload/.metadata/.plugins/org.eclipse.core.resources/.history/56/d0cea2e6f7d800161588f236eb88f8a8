@@ -1,0 +1,21 @@
+package local.filestorage.rest.util;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+
+import com.mobus.software.common.dal.files.StorageHandlerInterface;
+
+public class StorageUtil {
+
+	public static void store(String filename, String folderPath, byte[] content) throws IOException {
+		File file = new File(folderPath + File.separator + filename);
+		if (!file.exists())
+			file.createNewFile();
+		FileUtils.writeByteArrayToFile(file, content);
+	}
+}

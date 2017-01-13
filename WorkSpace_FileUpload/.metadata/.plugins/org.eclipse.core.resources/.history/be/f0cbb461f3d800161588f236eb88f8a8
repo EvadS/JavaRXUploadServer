@@ -1,0 +1,5 @@
+package local.filestorage.server;
+
+public class StorageBean {
+
+}

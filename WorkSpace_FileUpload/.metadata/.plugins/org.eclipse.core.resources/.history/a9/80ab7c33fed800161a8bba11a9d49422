@@ -1,0 +1,18 @@
+package local.filestorage.rest.util;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+
+public class StorageUtil {
+	public static void store(String filename, String path, byte[] content) throws IOException {
+		String fullPath = arrangePath(filename,path);
+		File file = new File(fullPath);
+		FileUtils.writeByteArrayToFile(file, content);
+	}
+
+	private static String arrangePath(String filename, String path) {
+		return path + "\\" + filename;
+	}
+}
